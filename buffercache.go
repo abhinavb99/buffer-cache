@@ -60,6 +60,26 @@ func GetBuffer()[]byte {
 	return Queue.dequeue()
 }
 
+//Displays the various statistics related to a buffer
+
+func Stats() {
+	fmt.Println("cache memory used = ", Queue.memSize) 
+	fmt.Println("cache memory max size = ", Queue.maxMemSize) 
+	fmt.Println("cache memory buffers holding time = ", Queue.ageLimit) 
+	fmt.Println("cache memory buffer count = ", len(Queue.buffers)) 
+	fmt.Println("cache memory deleted buffer count = ", Queue.deletedBufCount) 
+}
+
+//Modification of the buffer size and its age
+
+func  ModifyBufCacheParams(msize int,age int64) {
+	Queue.maxMemSize = msize
+	Queue.ageLimit = age
+	Queue.ageOut()
+}
+
+//Enqueuing a buffer into the queue
+
 func (q *queue) enqueue (b  []byte) {
 	if b == nil {
 		return 
@@ -87,6 +107,8 @@ func (q *queue) enqueue (b  []byte) {
 	q.memSize = q.memSize + len(b)
 }
 
+//Dequeuing a buffer from the queue
+
 func (q *queue) dequeue () []byte {
 	if len(q.buffers) == 0 {
 		return nil
@@ -96,6 +118,8 @@ func (q *queue) dequeue () []byte {
 		q.memSize = q.memSize - len(element.data)
 		return element.data
 }
+
+//Verifies the age restrictions of the buffers
 
 func (q *queue) ageOut() {
 	if len(q.buffers) == 0  {
@@ -126,20 +150,3 @@ func (q *queue) dequeueEnough(size int) {
 
 
 
-//Displays the various statistics related to a buffer
-
-func (q *queue) stats() {
-	fmt.Println("cache memory used = ", q.memSize) 
-	fmt.Println("cache memory max size = ", q.maxMemSize) 
-	fmt.Println("cache memory buffers holding time = ", q.ageLimit) 
-	fmt.Println("cache memory buffer count = ", len(q.buffers)) 
-	fmt.Println("cache memory deleted buffer count = ", q.deletedBufCount) 
-}
-
-//Modification of the buffer size and its age
-
-func  ModifyBufCacheParams(msize int,age int64) {
-	Queue.maxMemSize = msize
-	Queue.ageLimit = age
-	Queue.ageOut()
-}
